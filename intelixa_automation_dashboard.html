@@ -1,0 +1,350 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--blue:#0057FF;--blue-light:#E8F0FF;--blue-mid:#3378FF;--blue-dark:#003FCC;}
+.app{display:flex;height:700px;background:#F7F9FC;font-family:system-ui,sans-serif;}
+.sidebar{width:210px;background:#fff;border-right:0.5px solid #E2E8F0;display:flex;flex-direction:column;flex-shrink:0;}
+.logo-area{padding:18px 16px 14px;border-bottom:0.5px solid #E2E8F0;}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo-icon{width:28px;height:28px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:15px;height:15px;fill:white;}
+.logo-name{font-size:16px;font-weight:600;color:#0F172A;letter-spacing:-0.3px;}
+.logo-tag{font-size:10px;color:#94A3B8;margin-top:1px;}
+.nav{padding:10px 8px;flex:1;}
+.nav-section{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:#94A3B8;padding:12px 8px 5px;}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;font-size:12.5px;color:#64748B;cursor:pointer;margin-bottom:1px;}
+.ni:hover{background:#F1F5F9;}
+.ni.active{background:var(--blue-light);color:var(--blue);font-weight:500;}
+.ni svg{width:14px;height:14px;flex-shrink:0;opacity:0.7;}
+.ni.active svg{opacity:1;}
+.badge-nb{margin-left:auto;background:var(--blue);color:#fff;font-size:9px;padding:2px 6px;border-radius:20px;font-weight:500;}
+.badge-go{margin-left:auto;background:#DCFCE7;color:#166534;font-size:9px;padding:2px 6px;border-radius:20px;}
+.user-row{padding:12px 14px;border-top:0.5px solid #E2E8F0;display:flex;align-items:center;gap:9px;}
+.av{width:28px;height:28px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--blue);flex-shrink:0;}
+.u-name{font-size:12px;font-weight:500;color:#0F172A;}
+.u-plan{font-size:10px;color:#94A3B8;}
+
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:#fff;border-bottom:0.5px solid #E2E8F0;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.pg-title{font-size:14px;font-weight:600;color:#0F172A;}
+.pg-sub{font-size:11px;color:#94A3B8;margin-top:1px;}
+.top-right{display:flex;align-items:center;gap:10px;}
+.dot-live{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#16A34A;}
+.dot-live span{width:6px;height:6px;border-radius:50%;background:#16A34A;animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.run-all-btn{background:var(--blue);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;}
+.run-all-btn:hover{background:var(--blue-dark);}
+.run-all-btn:disabled{background:#94A3B8;cursor:default;}
+
+.content{padding:18px 22px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.stat{background:#fff;border:0.5px solid #E2E8F0;border-radius:10px;padding:12px 14px;}
+.stat-l{font-size:10px;color:#94A3B8;margin-bottom:5px;}
+.stat-v{font-size:20px;font-weight:600;color:#0F172A;}
+.stat-d{font-size:10px;color:#16A34A;margin-top:2px;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.card{background:#fff;border:0.5px solid #E2E8F0;border-radius:10px;overflow:hidden;}
+.card-h{padding:12px 14px;border-bottom:0.5px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between;}
+.card-t{font-size:12.5px;font-weight:500;color:#0F172A;}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;}
+.b-blue{background:var(--blue-light);color:var(--blue);}
+.b-green{background:#DCFCE7;color:#166534;}
+.b-amber{background:#FEF3C7;color:#92400E;}
+.b-red{background:#FEE2E2;color:#991B1B;}
+.b-gray{background:#F1F5F9;color:#64748B;}
+
+.email-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:0.5px solid #F1F5F9;cursor:pointer;transition:background 0.15s;}
+.email-item:last-child{border-bottom:none;}
+.email-item:hover{background:#F8FAFC;}
+.edot{width:6px;height:6px;border-radius:50%;background:var(--blue);margin-top:4px;flex-shrink:0;}
+.edot.r{background:transparent;border:1px solid #CBD5E1;}
+.emeta{flex:1;min-width:0;}
+.efrom{font-size:11.5px;font-weight:500;color:#0F172A;display:flex;justify-content:space-between;}
+.efrom span{font-size:10px;font-weight:400;color:#94A3B8;}
+.esubj{font-size:11px;color:#475569;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.eprev{font-size:10px;color:#94A3B8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.etag{font-size:9px;padding:1px 6px;border-radius:20px;background:var(--blue-light);color:var(--blue);margin-left:5px;}
+
+.step-flow{padding:14px;}
+.step{display:flex;gap:10px;margin-bottom:10px;}
+.snum{width:22px;height:22px;border-radius:50%;background:var(--blue-light);color:var(--blue);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.3s;}
+.snum.done{background:#DCFCE7;color:#166534;}
+.snum.active-step{background:var(--blue);color:#fff;animation:pulse-ring 1s infinite;}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 0 0 rgba(0,87,255,0.3);}50%{box-shadow:0 0 0 4px rgba(0,87,255,0);}}
+.sbody{flex:1;}
+.stitle{font-size:11.5px;font-weight:500;color:#0F172A;}
+.sdesc{font-size:10.5px;color:#94A3B8;margin-top:2px;line-height:1.4;}
+.sline{width:1px;height:10px;background:#E2E8F0;margin-left:10px;}
+.action-btn{width:100%;padding:8px;border-radius:8px;background:var(--blue);color:#fff;font-size:11.5px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:12px;transition:background 0.15s;}
+.action-btn:hover{background:var(--blue-dark);}
+.action-btn:disabled{background:#94A3B8;}
+.progress-wrap{margin-top:8px;}
+.progress-bar{height:3px;background:#E2E8F0;border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--blue);border-radius:3px;transition:width 0.4s ease;}
+.prog-label{font-size:10px;color:#94A3B8;margin-top:4px;}
+
+.inv-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:0.5px solid #F1F5F9;font-size:11.5px;}
+.inv-row:last-child{border-bottom:none;}
+.inv-client{flex:1;font-weight:500;color:#0F172A;}
+.inv-amount{width:65px;text-align:right;color:#0F172A;}
+.inv-status{width:75px;text-align:right;}
+.inv-row.new-inv{background:#F0F7FF;animation:fadeIn 0.5s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+.toast{position:absolute;bottom:16px;right:16px;background:#0F172A;color:#fff;font-size:11.5px;padding:9px 14px;border-radius:8px;display:none;z-index:10;}
+.toast.show{display:block;animation:fadeIn 0.3s ease;}
+</style>
+
+<div class="app" style="position:relative;">
+
+<div class="sidebar">
+  <div class="logo-area">
+    <div class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 15 15"><path d="M7.5 1L10 6H14.5L11 9L12.5 14L7.5 10.5L2.5 14L4 9L0.5 6H5L7.5 1Z"/></svg></div>
+      <div><div class="logo-name">Intelixa</div><div class="logo-tag">Automatisation intelligente</div></div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="ni active">
+      <svg viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+      Vue d'ensemble
+    </div>
+    <div class="nav-section">Automatisations</div>
+    <div class="ni">
+      <svg viewBox="0 0 14 14" fill="currentColor"><path d="M1 2h12v1.5L8 8v5l-2-1V8L1 3.5V2z"/></svg>
+      Tri d'emails
+      <span class="badge-go">ON</span>
+    </div>
+    <div class="ni">
+      <svg viewBox="0 0 14 14" fill="currentColor"><path d="M2 2h10v10H2z" rx="1"/><path d="M4 6h6M4 8h4" stroke="#fff" stroke-width="1.2" fill="none"/></svg>
+      Relances
+      <span class="badge-nb">3</span>
+    </div>
+    <div class="ni">
+      <svg viewBox="0 0 14 14" fill="currentColor"><path d="M7 1L9.5 5.5H13L10 8.5L11.2 13L7 10.5L2.8 13L4 8.5L1 5.5H4.5L7 1z"/></svg>
+      Facturation
+      <span class="badge-go">ON</span>
+    </div>
+    <div class="ni">
+      <svg viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M7 4v3l2 2"/></svg>
+      Rapports
+      <span style="margin-left:auto;font-size:9px;color:#94A3B8;">Bientôt</span>
+    </div>
+  </div>
+  <div class="user-row">
+    <div class="av">SL</div>
+    <div><div class="u-name">Sophie Leclerc</div><div class="u-plan">Plan Pro · actif</div></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="pg-title">Tableau de bord</div>
+      <div class="pg-sub">Mercredi 8 avril 2026 · 3 automatisations actives</div>
+    </div>
+    <div class="top-right">
+      <div class="dot-live"><span></span> Système actif</div>
+      <button class="run-all-btn" id="runAllBtn" onclick="runAll()">▶ Tout automatiser</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-l">Heures économisées / mois</div>
+        <div class="stat-v" id="s1">14h</div>
+        <div class="stat-d" id="s1d">↑ +3h ce mois</div>
+      </div>
+      <div class="stat">
+        <div class="stat-l">Emails traités auto</div>
+        <div class="stat-v" id="s2">238</div>
+        <div class="stat-d" id="s2d">↑ cette semaine</div>
+      </div>
+      <div class="stat">
+        <div class="stat-l">Relances envoyées</div>
+        <div class="stat-v" id="s3">11</div>
+        <div class="stat-d" id="s3d">dont 4 payées</div>
+      </div>
+      <div class="stat">
+        <div class="stat-l">Factures générées</div>
+        <div class="stat-v" id="s4">6</div>
+        <div class="stat-d" id="s4d">3 880 € ce mois</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-h">
+          <div class="card-t">Tri automatique des emails</div>
+          <span class="badge b-blue" id="email-badge">En attente</span>
+        </div>
+        <div id="email-list">
+          <div class="email-item"><div class="edot"></div><div class="emeta"><div class="efrom">Marc Durand<span>10:42</span></div><div class="esubj">RE : Projet e-commerce — deadline ?<span class="etag">client</span></div><div class="eprev">Bonjour, pouvez-vous me confirmer...</div></div></div>
+          <div class="email-item"><div class="edot r"></div><div class="emeta"><div class="efrom">Nadia Benali<span>09:15</span></div><div class="esubj">Facture #0042 — relance<span class="etag">relance</span></div><div class="eprev">Réponse automatique envoyée</div></div></div>
+          <div class="email-item"><div class="edot r"></div><div class="emeta"><div class="efrom">Yann Petit<span>hier</span></div><div class="esubj">Devis branding — validation<span class="etag">devis</span></div><div class="eprev">Archivé · devis accepté</div></div></div>
+          <div class="email-item"><div class="edot r"></div><div class="emeta"><div class="efrom">Promo LinkedIn<span>hier</span></div><div class="esubj">Découvrez les nouvelles fonctionnalités...</div><div class="eprev">Déplacé → Spam ✓</div></div></div>
+        </div>
+        <div style="padding:10px 14px;border-top:0.5px solid #F1F5F9;">
+          <button class="action-btn" id="emailBtn" onclick="runEmails()">▶ Lancer le tri</button>
+          <div class="progress-wrap" id="email-prog" style="display:none;">
+            <div class="progress-bar"><div class="progress-fill" id="email-fill" style="width:0%"></div></div>
+            <div class="prog-label" id="email-prog-label">Analyse en cours...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <div class="card-t">Relances clients impayés</div>
+          <span class="badge b-amber" id="relance-badge">3 en attente</span>
+        </div>
+        <div class="step-flow">
+          <div class="step"><div class="snum done" id="st1">✓</div><div class="sbody"><div class="stitle">Détection impayé J+30</div><div class="sdesc">Facture #0038 · Karim Mansouri · 620 €</div></div></div>
+          <div class="sline"></div>
+          <div class="step"><div class="snum done" id="st2">✓</div><div class="sbody"><div class="stitle">Email de relance poli envoyé</div><div class="sdesc">Envoyé le 3 avr. · ouvert 2x</div></div></div>
+          <div class="sline"></div>
+          <div class="step"><div class="snum" id="st3">3</div><div class="sbody"><div class="stitle">Relance ferme J+7</div><div class="sdesc" id="st3desc">Planifiée pour le 10 avr.</div></div></div>
+          <div class="sline"></div>
+          <div class="step"><div class="snum" id="st4" style="opacity:0.35">4</div><div class="sbody"><div class="stitle" style="opacity:0.5">Alerte + modèle mise en demeure</div><div class="sdesc" style="opacity:0.4">Si toujours impayé à J+45</div></div></div>
+          <button class="action-btn" id="relanceBtn" onclick="runRelance()">▶ Envoyer relance ferme</button>
+          <div class="progress-wrap" id="relance-prog" style="display:none;">
+            <div class="progress-bar"><div class="progress-fill" id="relance-fill" style="width:0%"></div></div>
+            <div class="prog-label" id="relance-prog-label">Génération de l'email...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">Facturation automatique</div>
+        <span class="badge b-green" id="facture-badge">6 factures · 3 880 €</span>
+      </div>
+      <div id="inv-table">
+        <div class="inv-row" style="background:#F8FAFC;font-size:10px;color:#94A3B8;padding:6px 14px;">
+          <div style="flex:1;">Client</div><div style="width:90px;font-size:10px;">Prestation</div><div style="width:65px;text-align:right;">Montant</div><div style="width:75px;text-align:right;">Statut</div>
+        </div>
+        <div class="inv-row"><div class="inv-client">Marc Durand</div><div style="width:90px;font-size:10.5px;color:#94A3B8;">Développement</div><div class="inv-amount">1 200 €</div><div class="inv-status"><span class="badge b-green">Payé</span></div></div>
+        <div class="inv-row"><div class="inv-client">Nadia Benali</div><div style="width:90px;font-size:10.5px;color:#94A3B8;">Conseil UX</div><div class="inv-amount">620 €</div><div class="inv-status"><span class="badge b-amber">En attente</span></div></div>
+        <div class="inv-row"><div class="inv-client">Yann Petit</div><div style="width:90px;font-size:10.5px;color:#94A3B8;">Branding</div><div class="inv-amount">900 €</div><div class="inv-status"><span class="badge b-green">Payé</span></div></div>
+        <div class="inv-row"><div class="inv-client">Céline Voss</div><div style="width:90px;font-size:10.5px;color:#94A3B8;">Rédaction</div><div class="inv-amount">480 €</div><div class="inv-status"><span class="badge b-green">Payé</span></div></div>
+        <div class="inv-row"><div class="inv-client">Karim Mansouri</div><div style="width:90px;font-size:10.5px;color:#94A3B8;">Développement</div><div class="inv-amount">480 €</div><div class="inv-status"><span class="badge b-red">Relance</span></div></div>
+        <div class="inv-row"><div class="inv-client">Paul Merle</div><div style="width:90px;font-size:10.5px;color:#94A3B8;">SEO</div><div class="inv-amount">200 €</div><div class="inv-status"><span class="badge b-amber">En attente</span></div></div>
+      </div>
+      <div style="padding:10px 14px;border-top:0.5px solid #F1F5F9;">
+        <button class="action-btn" id="factureBtn" onclick="runFacture()">▶ Générer nouvelle facture</button>
+        <div class="progress-wrap" id="facture-prog" style="display:none;">
+          <div class="progress-bar"><div class="progress-fill" id="facture-fill" style="width:0%"></div></div>
+          <div class="prog-label" id="facture-prog-label">Création de la facture...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+
+function animateProgress(fillId,labelId,steps,cb){
+  var fill=document.getElementById(fillId);
+  var label=document.getElementById(labelId);
+  var i=0;
+  function next(){
+    if(i>=steps.length){if(cb)cb();return;}
+    fill.style.width=steps[i].pct+'%';
+    label.textContent=steps[i].label;
+    i++;setTimeout(next,steps[i-1].delay||600);
+  }
+  next();
+}
+
+function runEmails(){
+  var btn=document.getElementById('emailBtn');
+  btn.disabled=true;btn.textContent='En cours...';
+  var prog=document.getElementById('email-prog');
+  prog.style.display='block';
+  document.getElementById('email-badge').textContent='En cours...';
+  document.getElementById('email-badge').className='badge b-blue';
+  animateProgress('email-fill','email-prog-label',[
+    {pct:20,label:'Connexion boîte mail...',delay:600},
+    {pct:45,label:'Lecture de 238 emails...',delay:700},
+    {pct:70,label:'Classification IA...',delay:800},
+    {pct:90,label:'Archivage spam...',delay:600},
+    {pct:100,label:'Terminé !',delay:400}
+  ],function(){
+    document.getElementById('email-badge').textContent='238 triés ✓';
+    document.getElementById('email-badge').className='badge b-green';
+    var items=document.querySelectorAll('.email-item');
+    items.forEach(function(el,i){setTimeout(function(){el.querySelector('.edot').classList.add('r');},i*120);});
+    document.getElementById('s2').textContent='241';
+    btn.textContent='✓ Terminé';
+    showToast('238 emails triés automatiquement');
+  });
+}
+
+function runRelance(){
+  var btn=document.getElementById('relanceBtn');
+  btn.disabled=true;btn.textContent='En cours...';
+  var prog=document.getElementById('relance-prog');
+  prog.style.display='block';
+  document.getElementById('st3').className='snum active-step';
+  animateProgress('relance-fill','relance-prog-label',[
+    {pct:25,label:'Rédaction email personnalisé...',delay:800},
+    {pct:55,label:'Ajout du PDF facture...',delay:700},
+    {pct:80,label:'Envoi à k.mansouri@...',delay:600},
+    {pct:100,label:'Email envoyé !',delay:400}
+  ],function(){
+    document.getElementById('st3').className='snum done';
+    document.getElementById('st3').textContent='✓';
+    document.getElementById('st3desc').textContent='Envoyée le 8 avr. · 14:23';
+    document.getElementById('st4').style.opacity='1';
+    document.getElementById('relance-badge').textContent='2 en attente';
+    document.getElementById('s3').textContent='12';
+    btn.textContent='✓ Envoyée';
+    showToast('Relance ferme envoyée à Karim Mansouri');
+  });
+}
+
+function runFacture(){
+  var btn=document.getElementById('factureBtn');
+  btn.disabled=true;btn.textContent='En cours...';
+  var prog=document.getElementById('facture-prog');
+  prog.style.display='block';
+  animateProgress('facture-fill','facture-prog-label',[
+    {pct:30,label:'Récupération données mission...',delay:700},
+    {pct:60,label:'Génération PDF facture #0049...',delay:800},
+    {pct:85,label:'Envoi automatique au client...',delay:600},
+    {pct:100,label:'Facture envoyée !',delay:400}
+  ],function(){
+    var table=document.getElementById('inv-table');
+    var newRow=document.createElement('div');
+    newRow.className='inv-row new-inv';
+    newRow.innerHTML='<div class="inv-client">Thomas Garnier</div><div style="width:90px;font-size:10.5px;color:#94A3B8;">Consulting</div><div class="inv-amount">750 €</div><div class="inv-status"><span class="badge b-blue">Envoyée</span></div>';
+    table.appendChild(newRow);
+    document.getElementById('facture-badge').textContent='7 factures · 4 630 €';
+    document.getElementById('s4').textContent='7';
+    document.getElementById('s4d').textContent='4 630 € ce mois';
+    btn.textContent='✓ Générée';
+    showToast('Facture #0049 · Thomas Garnier · 750 € envoyée');
+  });
+}
+
+function runAll(){
+  var btn=document.getElementById('runAllBtn');
+  btn.disabled=true;btn.textContent='Automatisation...';
+  setTimeout(function(){runEmails();},200);
+  setTimeout(function(){runRelance();},1800);
+  setTimeout(function(){runFacture();},3800);
+  setTimeout(function(){
+    document.getElementById('s1').textContent='17h';
+    document.getElementById('s1d').textContent='↑ +3h aujourd\'hui';
+    btn.textContent='✓ Tout automatisé';
+    showToast('Toutes les tâches automatisées avec succès');
+  },6200);
+}
+</script>

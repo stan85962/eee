@@ -60,14 +60,15 @@ body:not(.edit) main{display:none}
 <script>
 const CATS=["Idées","Designs","Collections","Fournisseurs","Marketing","To-do","Prix"];
 const KEY="carnet-marque";
-let data={brand:"",notes:[]},cur=null,filter="Tout",q="";
+let data={brand:"Wear The Untold",notes:[]},cur=null,filter="Tout",q="";
 try{data=JSON.parse(localStorage.getItem(KEY))||data}catch(e){}
 const $=id=>document.getElementById(id);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
 const fmt=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-$("brand").value=data.brand||"";
+if(!data.brand)data.brand="Wear The Untold";
+$("brand").value=data.brand;
 $("brand").oninput=e=>{data.brand=e.target.value;save();document.title=data.brand||"Carnet de marque"};
 document.title=data.brand||"Carnet de marque";
 

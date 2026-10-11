@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carnet de marque</title>
+<style>
+:root{--bg:#f6f4ef;--panel:#fff;--ink:#1b1b1b;--muted:#8a857c;--line:#e6e1d8;--accent:#1b1b1b;--hl:#fff3c4}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--panel:#1d1d1d;--ink:#eee;--muted:#8c8c8c;--line:#2c2c2c;--accent:#eee;--hl:#3a3420}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:15px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+aside{width:290px;min-width:290px;border-right:1px solid var(--line);display:flex;flex-direction:column;background:var(--panel)}
+.brand{padding:18px 16px 10px;display:flex;align-items:center;gap:8px}
+.brand input{font-weight:800;font-size:20px;letter-spacing:.5px;text-transform:uppercase;border:0;background:none;color:var(--ink);width:100%;outline:none}
+.search{margin:0 16px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);outline:none}
+.cats{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
+.cats button{font-size:12px;padding:4px 10px;border:1px solid var(--line);border-radius:20px}
+.cats button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.list{flex:1;overflow-y:auto;border-top:1px solid var(--line)}
+.item{padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer}
+.item.on{background:var(--hl)}
+.item b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item small{color:var(--muted);font-size:12px}
+.foot{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--line)}
+.foot button{flex:1;font-size:12px;padding:7px;border:1px solid var(--line);border-radius:8px}
+.new{margin:0 16px 12px;padding:9px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:600}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+.bar{display:flex;align-items:center;gap:10px;padding:14px 24px;border-bottom:1px solid var(--line)}
+.bar select{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.bar .sp{flex:1}
+.bar small{color:var(--muted)}
+.bar .del{color:#c0392b;font-size:13px}
+.title{font-size:26px;font-weight:700;border:0;background:none;color:var(--ink);outline:none;padding:20px 24px 6px;width:100%}
+textarea{flex:1;border:0;background:none;color:var(--ink);outline:none;resize:none;padding:6px 24px 24px;font:16px/1.7 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+.empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.back{display:none}
+@media (max-width:700px){
+aside{width:100%;min-width:0}
+body.edit aside{display:none}
+body:not(.edit) main{display:none}
+.back{display:inline}
+}
+</style>
+</head>
+<body>
+<aside>
+<div class="brand"><input id="brand" placeholder="Nom de ta marque" spellcheck="false"></div>
+<button class="new" id="new">+ Nouvelle note</button>
+<input class="search" id="search" placeholder="Rechercher...">
+<div class="cats" id="cats"></div>
+<div class="list" id="list"></div>
+<div class="foot">
+<button id="export">Sauvegarder</button>
+<button id="import">Importer</button>
+<input type="file" id="file" accept=".json" hidden>
+</div>
+</aside>
+<main id="main"></main>
+<script>
+const CATS=["Idées","Designs","Collections","Fournisseurs","Marketing","To-do","Prix"];
+const KEY="carnet-marque";
+let data={brand:"",notes:[]},cur=null,filter="Tout",q="";
+try{data=JSON.parse(localStorage.getItem(KEY))||data}catch(e){}
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const fmt=t=>new Date(t).toLocaleDateString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("brand").value=data.brand||"";
+$("brand").oninput=e=>{data.brand=e.target.value;save();document.title=data.brand||"Carnet de marque"};
+document.title=data.brand||"Carnet de marque";
+
+function renderCats(){
+$("cats").innerHTML=["Tout",...CATS].map(c=>`<button class="${c===filter?"on":""}">${c}</button>`).join("");
+[...$("cats").children].forEach(b=>b.onclick=()=>{filter=b.textContent;renderCats();renderList()});
+}
+function renderList(){
+const n=data.notes.filter(x=>(filter==="Tout"||x.cat===filter)&&(x.title+x.body).toLowerCase().includes(q)).sort((a,b)=>b.up-a.up);
+$("list").innerHTML=n.length?n.map(x=>`<div class="item ${cur&&x.id===cur.id?"on":""}" data-id="${x.id}"><b>${esc(x.title||"Sans titre")}</b><small>${x.cat} · ${fmt(x.up)}</small></div>`).join(""):`<div class="item"><small>Aucune note</small></div>`;
+[...$("list").querySelectorAll("[data-id]")].forEach(el=>el.onclick=()=>open(el.dataset.id));
+}
+function renderMain(){
+if(!cur){$("main").innerHTML=`<div class="empty">Crée ou choisis une note</div>`;return}
+$("main").innerHTML=`<div class="bar"><button class="back" id="back">←</button><select id="cat">${CATS.map(c=>`<option ${c===cur.cat?"selected":""}>${c}</option>`).join("")}</select><span class="sp"></span><small id="when">${fmt(cur.up)}</small><button class="del" id="del">Supprimer</button></div><input class="title" id="title" placeholder="Titre" value="${esc(cur.title)}"><textarea id="body" placeholder="Écris ici... (« - [ ] » pour une case à cocher)">${esc(cur.body)}</textarea>`;
+const touch=()=>{cur.up=Date.now();$("when").textContent=fmt(cur.up);save();renderList()};
+$("title").oninput=e=>{cur.title=e.target.value;touch()};
+$("body").oninput=e=>{cur.body=e.target.value;touch()};
+$("cat").onchange=e=>{cur.cat=e.target.value;touch()};
+$("del").onclick=()=>{if(!confirm("Supprimer cette note ?"))return;data.notes=data.notes.filter(x=>x.id!==cur.id);cur=null;save();document.body.classList.remove("edit");renderList();renderMain()};
+$("back").onclick=()=>document.body.classList.remove("edit");
+$("body").onkeydown=e=>{
+if(e.key!=="Enter")return;
+const t=e.target,s=t.selectionStart,line=t.value.slice(t.value.lastIndexOf("\n",s-1)+1,s);
+const m=line.match(/^(\s*)(- \[[ x]\] |- )/);
+if(!m)return;
+e.preventDefault();
+if(line.trim()===m[2].trim()){t.setRangeText("",s-line.length,s,"end");}
+else t.setRangeText("\n"+m[1]+(m[2].startsWith("- [")?"- [ ] ":"- "),s,s,"end");
+t.dispatchEvent(new Event("input"));
+};
+$("body").ondblclick=e=>{
+const t=e.target,s=t.selectionStart,a=t.value.lastIndexOf("\n",s-1)+1,line=t.value.slice(a).split("\n")[0];
+const m=line.match(/^(\s*- \[)([ x])(\])/);
+if(!m)return;
+t.setRangeText(m[2]===" "?"x":" ",a+m[1].length,a+m[1].length+1,"preserve");
+t.dispatchEvent(new Event("input"));
+};
+}
+function open(id){cur=data.notes.find(x=>x.id===id);document.body.classList.add("edit");renderList();renderMain()}
+
+$("new").onclick=()=>{
+const n={id:Date.now().toString(36),title:"",body:"",cat:filter==="Tout"?"Idées":filter,up:Date.now()};
+data.notes.push(n);save();open(n.id);$("title").focus();
+};
+$("search").oninput=e=>{q=e.target.value.toLowerCase();renderList()};
+$("export").onclick=()=>{
+const a=document.createElement("a");
+a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));
+a.download=`carnet-${new Date().toISOString().slice(0,10)}.json`;a.click();
+};
+$("import").onclick=()=>$("file").click();
+$("file").onchange=e=>{
+const f=e.target.files[0];if(!f)return;
+f.text().then(t=>{try{const d=JSON.parse(t);if(!Array.isArray(d.notes))throw 0;if(!confirm("Remplacer toutes tes notes par ce fichier ?"))return;data=d;cur=null;save();$("brand").value=data.brand||"";renderCats();renderList();renderMain()}catch(_){alert("Fichier invalide")}});
+e.target.value="";
+};
+document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="n"){e.preventDefault();$("new").click()}});
+
+renderCats();renderList();renderMain();
+</script>
+</body>
+</html>
